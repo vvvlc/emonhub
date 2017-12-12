@@ -275,15 +275,11 @@ class EmonHubInterfacer(threading.Thread):
 
         rxc.realdata = decoded
 
-        names = []
-        if node in ehc.nodelist and 'rx' in ehc.nodelist[node] and 'names' in ehc.nodelist[node]['rx']:
-            names = ehc.nodelist[node]['rx']['names']
-        rxc.names = names
+        if len(rxc.names)==0 and node in ehc.nodelist and 'rx' in ehc.nodelist[node] and 'names' in ehc.nodelist[node]['rx']:
+            rxc.names = ehc.nodelist[node]['rx']['names']
 
-        nodename = False
         if node in ehc.nodelist and 'nodename' in ehc.nodelist[node]:
-            nodename = ehc.nodelist[node]['nodename']
-        rxc.nodename = nodename
+            rxc.nodename = ehc.nodelist[node]['nodename']
 
         if not rxc:
             return False
