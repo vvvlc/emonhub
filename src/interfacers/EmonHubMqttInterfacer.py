@@ -40,6 +40,7 @@ class EmonHubMqttInterfacer(EmonHubInterfacer):
 
     # The action method is called from emonhub_interfacer.py method run               
     def action(self):
+
         if not self._connected:
             self._log.info("Connecting to MQTT Server")
             try:
@@ -56,7 +57,6 @@ class EmonHubMqttInterfacer(EmonHubInterfacer):
                 if channel in self._sub_channels:
                     while len(self._sub_channels[channel])>0:
                         cargo = self._sub_channels[channel].pop(0)
-                        
                         # ----------------------------------------------------------
                         # General MQTT format: emonhub/rx/emonpi/power1 ... 100
                         # ----------------------------------------------------------

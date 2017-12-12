@@ -26,6 +26,7 @@ class EmonHubTx3eInterfacer(ehi.EmonHubInterfacer):
 
         self._settings = {
             'pubchannels':[],
+            'subchannels':[],
             'nodename': "mynode",
             "datacode":False,
             "scale":1
