@@ -270,6 +270,9 @@ if __name__ == "__main__":
     # Log file
     parser.add_argument('--logfile', action='store', type=argparse.FileType('a'),
                         help='Log file (default: log to Standard error stream STDERR)')
+    # Log rotation size
+    parser.add_argument('--logfilesize', action='store', type=int, default=5000*1024,
+                        help='Log file size (default: 5000*1024)')    
     # Show settings
     parser.add_argument('--show-settings', action='store_true',
                         help='show settings and exit (for debugging purposes)')
@@ -295,20 +298,24 @@ if __name__ == "__main__":
         # this ensures it is writable
         # Close the file for now and get its path
         args.logfile.close()
-        loghandler = logging.handlers.RotatingFileHandler(args.logfile.name,
-                                                       'a', 5000 * 1024, 1)
-    # Format log strings
-    loghandler.setFormatter(logging.Formatter(
-            '%(asctime)s %(levelname)-8s %(threadName)-10s %(message)s'))
-
-    logger.addHandler(loghandler)
-
+        loghandler = logging.handlers.RotatingFileHandler(args.logfile.name, 'a', args.logfilesize, 1)
     # Initialize hub setup
     try:
         setup = ehs.EmonHubFileSetup(args.config_file)
     except ehs.EmonHubSetupInitError as e:
         logger.critical(e)
         sys.exit("Unable to load configuration file: " + args.config_file)
+
+    # Format log strings
+    if ('logformat' in setup.settings['hub']):
+        #loghandler.setFormatter(logging.Formatter('%(asctime)s, %(levelname)-8s %(threadName)-10s [%(filename)20s:%(lineno)04d] %(message)s'))
+        loghandler.setFormatter(logging.Formatter('%(asctime)s, %(levelname)-8s %(threadName)-10s [%(filename)s:%(lineno)d] %(message)s'))
+    else:
+        loghandler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)-8s %(threadName)-10s %(message)s'))
+
+    logger.addHandler(loghandler)
+
 
     if 'use_syslog' in setup.settings['hub']:
         if setup.settings['hub']['use_syslog'] == 'yes':
